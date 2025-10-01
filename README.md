@@ -1,47 +1,58 @@
-# Talk-to-Click: Voice Controlled Internet Navigation
+# Click-to-Talk: Voice Controlled Mouse Navigation
 
 ## Overview
-**Talk-to-Click** is a proposed Chrome extension that enables voice-controlled mouse navigation for web browsing.  
-This adaptive technology is designed to support individuals with fine-motor and dexterity challenges—such as those affected by Parkinson’s disease or declining motor coordination—who struggle with traditional mouse or trackpad use.  
+**Click-to-Talk** is a Python desktop application that enables voice-controlled mouse navigation for computer use.
+This adaptive technology is designed to support individuals with fine-motor and dexterity challenges—such as those affected by Parkinson's disease or declining motor coordination—who struggle with traditional mouse or trackpad use.
 
-By translating voice input into precise mouse movements and clicks, the extension reduces both the **gulf of execution** and the **gulf of evaluation**, enabling users to navigate the internet more effectively and independently.
+By translating voice input into precise mouse movements and clicks, the application reduces both the **gulf of execution** and the **gulf of evaluation**, enabling users to navigate any application or website more effectively and independently.
 
----
+## Installation
 
-## Motivation
-Operating a mouse requires multiple fine-motor skills:  
-- Pinpointing a location on the screen.  
-- Holding the cursor steady.  
-- Executing the correct click (left vs. right).  
+### Prerequisites
+- Python 3.8 or higher
+- Microphone (built-in or external)
+- Windows, macOS, or Linux
 
-For many users with motor coordination difficulties, these actions may fail at the execution phase. Mis-clicks often go unnoticed, leading to unintended outcomes and user frustration.  
+### Install from Source
+```bash
+git clone <repository-url>
+cd click-to-talk
+pip install -r requirements.txt
+```
 
-**Talk-to-Click** aims to bridge this accessibility gap by replacing complex motor actions with **intuitive voice commands**.
+### Run the Application
+```bash
+python main.py
+```
 
----
+## Usage
+
+### Voice Commands
+- **Movement**: "move up", "move down", "move left", "move right" [optional distance in pixels]
+- **Clicks**: "click", "left click", "right click", "double click"
+- **Scroll**: "scroll up", "scroll down"
+- **Info**: "show position" (displays current cursor coordinates)
+- **Stop**: "stop", "quit", "exit" (shuts down the application)
+
+### Examples
+- "move up 100" - Move cursor up by 100 pixels
+- "click" - Perform left mouse click
+- "scroll down" - Scroll down
+- "show position" - Display current cursor location
+
+### Safety Features
+- Failsafe: Move mouse to screen corner to stop
+- Distance limits: Maximum movement distance capped
+- Error handling: Graceful handling of recognition failures
+- Emergency stop: Voice commands to quit immediately
 
 ## Technology
-The implementation will rely on existing, widely available hardware and software:  
+The implementation relies on widely available hardware and software:
 
-- **Input Device:** Computer’s built-in microphone (standard on most laptops, monitors, and mobile devices).  
-- **Voice Recognition:** Python speech-to-text libraries to process and interpret spoken commands.  
-- **Action Mapping:** Speech input translated into text commands that trigger mouse movements or clicks.  
-
----
-
-## Features (Planned & Potential)
-**Initial Features:**  
-- Mouse navigation via commands: `"up"`, `"down"`, `"left"`, `"right"`.  
-- Mouse click commands: `"left click"`, `"right click"`.  
-- Browser navigation: `"back"`, `"forward"`, `"reload"`.  
-- Address bar control via voice commands.  
-
-**Future Features:**  
-- Command `"find"` to visually emphasize the cursor with a highlight or circle.  
-- More natural language processing for advanced voice interaction.  
-- Potential for **full mouse functionality** controlled entirely through speech.  
-
----
+- **Input Device:** Computer's built-in microphone
+- **Voice Recognition:** Google Speech Recognition API via Python speech_recognition library
+- **Mouse Control:** PyAutoGUI for cross-platform mouse simulation
+- **Platform:** Python 3.8+ with cross-platform compatibility
 
 ## Team Organization
 

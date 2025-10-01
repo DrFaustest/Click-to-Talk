@@ -1,0 +1,5 @@
+speech_recognition>=3.8.1
+pyautogui>=0.9.53
+pyaudio>=0.2.11
+pytest>=7.0.0
+pytest-mock>=3.10.0
