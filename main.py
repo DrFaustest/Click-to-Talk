@@ -22,6 +22,7 @@ class ClickToTalkApp:
         self.speech_handler.set_stop_callback(self.stop)
         self.running = False
 
+    # Start the application
     def start(self):
         """Start the voice control application"""
         print("=" * 60)
