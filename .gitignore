@@ -1,0 +1,30 @@
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment / secrets
+.env
+*.env
+
+# VS Code settings
+.vscode/
+
+# macOS / Windows / general OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build and packaging
+build/
+dist/
+*.egg-info/
