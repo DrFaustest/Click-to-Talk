@@ -9,14 +9,58 @@ By translating voice input into precise mouse movements and clicks, the applicat
 ## Installation
 
 ### Prerequisites
-- Python 3.8 or higher
+- Python 3.12 or lower
 - Microphone (built-in or external)
 - Windows, macOS, or Linux
+
+### Installing Python 
+For Windows
+- Download the Windows installer:
+
+https://www.python.org/downloads/release/python-3117/
+
+- Right-click → Run as administrator.
+
+- In the first screen:
+
+  - Check “Add Python to PATH”
+
+  - Click Customize installation
+
+  - Keep defaults → Next.
+
+  - In Advanced Options:
+
+    - Add Python to environment variables
+
+    - Install for all users (recommended)
+
+    - Create shortcuts for installed applications
+
+    - (Optional) Associate files with Python
+
+- Click Install (or Repair if already installed).
+
+For Mac/Linux
+- macOS: use the official installer or 
+```bash
+brew install python@3.11
+```
+- Ubuntu/Debian (example):
+```bash
+sudo apt-get update
+sudo apt-get install -y python3.11 python3.11-venv python3.11-distutils
+```
 
 ### Install from Source
 ```bash
 git clone <repository-url>
 cd click-to-talk
+#Run these commands in terminal once inside directory to initialize environment
+py -3.11 -m venv venv
+venv\Scripts\activate
+# source venv/bin/activate if Mac/Linux
+python --version   # should be 3.11.x
 pip install -r requirements.txt
 ```
 
