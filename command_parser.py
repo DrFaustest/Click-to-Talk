@@ -4,16 +4,39 @@ Interprets voice commands and executes corresponding mouse actions
 """
 
 import re
+import sys  # NEW: for platform-aware shortcuts
 from config import Config
 
 class CommandParser:
     def __init__(self, config):
         self.config = config
         self.mouse_controller = None  # Will be set by main app
+        self.window_manager = None    # NEW: injected for browser/site navigation
+        self.keyboard_controller = None  # NEW: injected for typing/shortcuts
 
     def set_mouse_controller(self, mouse_controller):
         """Set the mouse controller instance"""
         self.mouse_controller = mouse_controller
+
+    # NEW: allow main.py to inject WindowManager
+    def set_window_manager(self, wm):
+        self.window_manager = wm  # NEW
+
+    # NEW: allow main.py to inject KeyboardController
+    def set_keyboard_controller(self, kc):
+        self.keyboard_controller = kc  # NEW
+
+    def _primary_mod(self) -> str:
+        """NEW: Return platform's primary modifier for common shortcuts."""
+        return "command" if sys.platform == "darwin" else "ctrl"  # NEW
+
+    def _extract_target_after_trigger(self, text: str):
+        """NEW: Return the substring after specific voice triggers, trimmed."""
+        triggers = ("open ", "go to ", "navigate to ")
+        for trig in triggers:
+            if text.startswith(trig):
+                return text[len(trig):].strip()
+        return None
 
     def parse_command(self, text):
         """Parse voice command and execute action"""
@@ -22,7 +45,7 @@ class CommandParser:
 
         text = text.lower().strip()
 
-                # [ADDED] Handle visual locate before generic 'where'
+        # [ADDED] Handle visual locate before generic 'where'
         if self._is_find_command(text):  # [ADDED]
             try:  # [ADDED]
                 self.mouse_controller.highlight_cursor()  # [ADDED]
@@ -30,6 +53,51 @@ class CommandParser:
                 print(f"Error highlighting cursor: {e}")  # [ADDED]
             return  # [ADDED]
 
+        # NEW: Browser navigation / open (URLs or aliases)
+        if text.startswith(("open ", "go to ", "navigate to ")):  # NEW
+            if self.window_manager:  # NEW
+                target = self._extract_target_after_trigger(text)  # NEW
+                if target:  # NEW
+                    self.window_manager.open(target)  # NEW
+                else:  # NEW
+                    print("No navigation target recognized.")  # NEW
+            return  # NEW
+
+        # NEW: Typing / dictation
+        if text.startswith(("type ", "dictate ")):  # NEW
+            if self.keyboard_controller:  # NEW
+                content = text.split(" ", 1)[1]
+                self.keyboard_controller.type_text(content)  # NEW
+            return  # NEW
+
+        # NEW: Press / shortcuts (handle before click so 'press enter' isn't a click)
+        if text.startswith(("press ", "hit ")):  # NEW
+            if self.keyboard_controller:  # NEW
+                keys_phrase = text.split(" ", 1)[1]
+                self.keyboard_controller.press_keys(keys_phrase)  # NEW
+            return  # NEW
+
+        # NEW: Convenience phrases mapped to shortcuts
+        if self.keyboard_controller:  # NEW
+            mod = self._primary_mod()  # NEW
+            if text in {"new tab"}:
+                self.keyboard_controller.press_keys(f"{mod} t")  # NEW
+                return
+            if text in {"close tab"}:
+                self.keyboard_controller.press_keys(f"{mod} w")  # NEW
+                return
+            if text in {"next tab"}:
+                self.keyboard_controller.press_keys("ctrl tab")  # NEW
+                return
+            if text in {"previous tab", "prev tab"}:
+                self.keyboard_controller.press_keys("ctrl shift tab")  # NEW
+                return
+            if text in {"address bar", "focus address bar"}:
+                self.keyboard_controller.press_keys(f"{mod} l")  # NEW
+                return
+            if text in {"refresh", "reload"}:
+                self.keyboard_controller.press_keys(f"{mod} r")  # NEW
+                return
 
         # Check for click commands first (more specific)
         if self._is_click_command(text):
@@ -91,7 +159,8 @@ class CommandParser:
 
     def _is_click_command(self, text):
         """Check if text contains click command"""
-        click_keywords = ["click", "press", "tap"]
+        # NEW: removed "press" so 'press enter' is not misread as a click
+        click_keywords = ["click", "tap"]  # NEW: was ["click","press","tap"]
         return any(keyword in text for keyword in click_keywords)
 
     def _handle_click(self, text):

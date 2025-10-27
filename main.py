@@ -14,12 +14,31 @@ from config import Config
 import tkinter as tk  # [ADDED]
 from tkinter import ttk  # [ADDED]
 
+# NEW: bring in browser + keyboard controllers
+from window_manager import WindowManager  # NEW: browser/site navigation
+from keyboard_controller import KeyboardController  # NEW: typing and shortcuts
+
+
 class ClickToTalkApp:
     def __init__(self):
         self.config = Config()
         self.mouse_controller = MouseController(self.config)
         self.command_parser = CommandParser(self.config)
         self.command_parser.set_mouse_controller(self.mouse_controller)
+
+        # NEW: create browser-first WindowManager using Config aliases
+        self.window_manager = WindowManager(
+            site_aliases=getattr(self.config, "site_aliases", {}),
+            preferred_browser=getattr(self.config, "preferred_browser", None)
+        )
+        self.command_parser.set_window_manager(self.window_manager)  # NEW
+
+        # NEW: keyboard controller for typing + key combos
+        self.keyboard_controller = KeyboardController(
+            pause=getattr(self.config, "keyboard_pause", 0.05)
+        )
+        self.command_parser.set_keyboard_controller(self.keyboard_controller)  # NEW
+
         self.speech_handler = SpeechHandler(self.config, self.command_parser, self.mouse_controller)
         self.speech_handler.set_stop_callback(self.stop)
         self.running = False
@@ -36,6 +55,12 @@ class ClickToTalkApp:
         print("  Scroll: 'scroll up', 'scroll down'")
         print("  Info: 'show position'")
         print("  Stop: 'stop' or 'quit'")
+        print("-" * 60)
+        # NEW: show minimal browser/nav help
+        print("Browser & Navigation (NEW):")
+        print("  'open gmail'  |  'go to youtube'  |  'open gmail.com'")
+        print("  'open browser' (just opens your browser)")
+        print("  'type hello world'  |  'press enter'  |  'press ctrl c'")
         print("-" * 60)
         print("Starting speech recognition...")
 

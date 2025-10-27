@@ -51,3 +51,13 @@ class Config:
         self.highlight_duration_ms = 900                 # [ADDED] display time (ms)
         self.highlight_color = "#00A3FF"               # [ADDED] ring color (high-contrast cyan)
         self.highlight_bg_alpha = 0.18                   # [ADDED] reserved for future alpha handling
+
+
+        self.site_aliases = {
+            "gmail": "https://mail.google.com",
+            "youtube": "https://www.youtube.com",
+            "google": "https://www.google.com",
+        }
+        
+        self.preferred_browser = "Google Chrome"  # macOS exact name
+        # (Windows would be: "chrome")
