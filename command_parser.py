@@ -22,6 +22,15 @@ class CommandParser:
 
         text = text.lower().strip()
 
+                # [ADDED] Handle visual locate before generic 'where'
+        if self._is_find_command(text):  # [ADDED]
+            try:  # [ADDED]
+                self.mouse_controller.highlight_cursor()  # [ADDED]
+            except Exception as e:  # [ADDED]
+                print(f"Error highlighting cursor: {e}")  # [ADDED]
+            return  # [ADDED]
+
+
         # Check for click commands first (more specific)
         if self._is_click_command(text):
             self._handle_click(text)
@@ -114,3 +123,10 @@ class CommandParser:
                 self.mouse_controller.scroll("down")
         except Exception as e:
             print(f"Error scrolling: {e}")
+
+    def _is_find_command(self, text):  # [ADDED]
+        keywords = [  # [ADDED]
+            "find", "highlight cursor", "show cursor", "locate cursor",  # [ADDED]
+            "where is my cursor", "where's my cursor"  # [ADDED]
+        ]  # [ADDED]
+        return any(k in text for k in keywords)  # [ADDED]
