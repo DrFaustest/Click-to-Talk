@@ -159,7 +159,6 @@ class ClickToTalkApp:
             "open gmail.com",
             "open browser",
             # Typing & Shortcuts
-            "type ...",
             "press enter",
             "press ctrl c",
             "press ctrl v",

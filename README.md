@@ -75,7 +75,10 @@ python main.py
 - **Movement**: "move up", "move down", "move left", "move right" [optional distance in pixels]
 - **Clicks**: "click", "left click", "right click", "double click"
 - **Scroll**: "scroll up", "scroll down"
-- **Info**: "show position" (displays current cursor coordinates)
+- **Info**: "show position"
+- **Find Cursor**: "find mouse", "find my mouse", "find cursor", "find my cursor"
+- **Browser / Navigation**: "open gmail", "go to youtube", "open gmail.com", "open browser"
+- **Typing / Shortcuts**: "type hello world", "press enter", "press ctrl c", "press ctrl v", "new tab", "close tab", "next tab", "previous tab", "address bar", "refresh"
 - **Stop**: "stop", "quit", "exit" (shuts down the application)
 
 ### Examples
