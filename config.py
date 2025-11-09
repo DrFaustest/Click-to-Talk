@@ -40,17 +40,17 @@ class Config:
         self.stop_commands = ["stop", "quit", "exit", "end"]
 
         # GUI
-        self.gui_title = "Click-to-Talk"                 # [ADDED] window title
-        self.gui_topmost = True                          # [ADDED] keep panel above other windows
-        self.gui_width = 500                             # [ADDED] panel width (px)
-        self.gui_height = 700                            # [ADDED] panel height (px)
+        self.gui_title = "Click-to-Talk"                 # window title
+        self.gui_topmost = True                          # keep panel above other windows
+        self.gui_width = 500                             # panel width (px)
+        self.gui_height = 700                            # panel height (px)
 
         # Cursor highlight ("find") 
-        self.highlight_size = 140                        # [ADDED] highlight diameter (px)
-        self.highlight_border = 6                        # [ADDED] ring thickness (px)
-        self.highlight_duration_ms = 900                 # [ADDED] display time (ms)
-        self.highlight_color = "#00A3FF"               # [ADDED] ring color (high-contrast cyan)
-        self.highlight_bg_alpha = 0.18                   # [ADDED] reserved for future alpha handling
+        self.highlight_size = 140                        # highlight diameter (px)
+        self.highlight_border = 6                        # ring thickness (px)
+        self.highlight_duration_ms = 900                 # display time (ms)
+        self.highlight_color = "#00A3FF"               # ring color (high-contrast cyan)
+        self.highlight_bg_alpha = 0.18                   # reserved for future alpha handling
 
 
         self.site_aliases = {

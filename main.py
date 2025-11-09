@@ -11,8 +11,8 @@ from speech_handler import SpeechHandler
 from mouse_controller import MouseController
 from command_parser import CommandParser
 from config import Config
-import tkinter as tk  # [ADDED]
-from tkinter import ttk  # [ADDED]
+import tkinter as tk  
+from tkinter import ttk  
 
 # NEW: bring in browser + keyboard controllers
 from window_manager import WindowManager  # NEW: browser/site navigation
@@ -56,11 +56,18 @@ class ClickToTalkApp:
         print("  Info: 'show position'")
         print("  Stop: 'stop' or 'quit'")
         print("-" * 60)
-        # NEW: show minimal browser/nav help
-        print("Browser & Navigation (NEW):")
+        print("Find Cursor:")
+        print("  'find mouse'  |  'find my mouse'  |  'find cursor'  |  'find my cursor'")
+        print("-" * 60)
+        print("Browser & Navigation:")
         print("  'open gmail'  |  'go to youtube'  |  'open gmail.com'")
         print("  'open browser' (just opens your browser)")
-        print("  'type hello world'  |  'press enter'  |  'press ctrl c'")
+        print("-" * 60)
+        print("Typing & Shortcuts:")
+        print("  'type hello world'")
+        print("  'press enter'  |  'press ctrl c'  |  'press ctrl v'")
+        print("  'new tab'  |  'close tab'  |  'next tab'  |  'previous tab'")
+        print("  'address bar'  |  'refresh'")
         print("-" * 60)
         print("Starting speech recognition...")
 
@@ -71,40 +78,44 @@ class ClickToTalkApp:
         speech_thread.daemon = True
         speech_thread.start()
 
-        # [ADDED] ---- Minimal always-on-top control panel (non-disruptive to your loop) ----
-        root = tk.Tk()  # [ADDED]
-        root.title(self.config.gui_title)  # [ADDED]
-        root.geometry(f"{self.config.gui_width}x{self.config.gui_height}")  # [ADDED]
-        if self.config.gui_topmost:  # [ADDED]
-            root.attributes("-topmost", True)  # [ADDED]
+        # ---- Minimal always-on-top control panel (non-disruptive to your loop) ----
+        root = tk.Tk()  
+        root.title(self.config.gui_title)  
+        root.geometry(f"{self.config.gui_width}x{self.config.gui_height}")  
+        if self.config.gui_topmost:  
+            root.attributes("-topmost", True)  
 
-        status_var = tk.StringVar(value="Status: stopped")  # [ADDED]
-        ttk.Label(root, textvariable=status_var, font=("Segoe UI", 11, "bold")).pack(pady=(10, 6))  # [ADDED]
+        status_var = tk.StringVar(value="Status: stopped")  
+        ttk.Label(root, textvariable=status_var, font=("Segoe UI", 11, "bold")).pack(pady=(10, 6))  
 
-        btn_row = ttk.Frame(root)  # [ADDED]
-        btn_row.pack(pady=6)  # [ADDED]
-        def _start_listen():  # [ADDED]
-            if not self.speech_handler.listening:  # [ADDED]
-                threading.Thread(target=self.speech_handler.start_listening, daemon=True).start()  # [ADDED]
-        def _stop_listen():  # [ADDED]
-            if self.speech_handler.listening:  # [ADDED]
-                self.speech_handler.stop_listening()  # [ADDED]
-        ttk.Button(btn_row, text="Start Listening", command=_start_listen).grid(row=0, column=0, padx=6)  # [ADDED]
-        ttk.Button(btn_row, text="Stop", command=_stop_listen).grid(row=0, column=1, padx=6)  # [ADDED]
+        btn_col = ttk.Frame(root)
+        btn_col.pack(pady=6, fill="x")
 
-        ttk.Label(root, text="Movement distance (pixels)").pack(pady=(12, 2))  # [ADDED]
+        def _start_listen():
+            if not self.speech_handler.listening:
+                threading.Thread(target=self.speech_handler.start_listening, daemon=True).start()
 
-        # [ADDED] Create the value var and label FIRST so the callback can safely reference it
-        dist_val_var = tk.StringVar(value=f"{self.config.default_move_distance} px")  # [ADDED]
-        dist_val_lbl = ttk.Label(root, textvariable=dist_val_var)  # [ADDED]
-        dist_val_lbl.pack(pady=(0, 8))  # [ADDED]
+        def _stop_listen():
+            if self.speech_handler.listening:
+                self.speech_handler.stop_listening()
 
-        # [ADDED] Callback updates config + StringVar (no direct label reference)
-        def _on_scale(val):  # [ADDED]
-            self.config.default_move_distance = int(float(val))  # [ADDED]
-            dist_val_var.set(f"{self.config.default_move_distance} px")  # [ADDED]
+        ttk.Button(btn_col, text="Start Listening", command=_start_listen).pack(fill="x", padx=10)
+        ttk.Button(btn_col, text="Stop", command=_stop_listen).pack(fill="x", padx=10, pady=(6, 0))
 
-        dist_scale = ttk.Scale(  # [ADDED]
+
+        ttk.Label(root, text="Movement distance (pixels)").pack(pady=(12, 2))  
+
+        # Create the value var and label FIRST so the callback can safely reference it
+        dist_val_var = tk.StringVar(value=f"{self.config.default_move_distance} px")  
+        dist_val_lbl = ttk.Label(root, textvariable=dist_val_var)  
+        dist_val_lbl.pack(pady=(0, 8))  
+
+        # Callback updates config + StringVar (no direct label reference)
+        def _on_scale(val):  
+            self.config.default_move_distance = int(float(val))  
+            dist_val_var.set(f"{self.config.default_move_distance} px")  
+
+        dist_scale = ttk.Scale(  
             root,
             from_=10,
             to=self.config.default_move_distance * 5,
@@ -112,30 +123,81 @@ class ClickToTalkApp:
             length=self.config.gui_width - 40,
             command=_on_scale
         )
-        dist_scale.set(self.config.default_move_distance)  # [ADDED]
-        dist_scale.pack()  # [ADDED]
+        dist_scale.set(self.config.default_move_distance)  
+        dist_scale.pack()  
 
-        quick = ttk.Frame(root)  # [ADDED]
-        quick.pack(pady=6)  # [ADDED]
-        ttk.Button(quick, text="Show Position", command=self.mouse_controller.show_cursor_position).grid(row=0, column=0, padx=6)  # [ADDED]
-        ttk.Button(quick, text="Find (Highlight)", command=self.mouse_controller.highlight_cursor).grid(row=0, column=1, padx=6)  # [ADDED]
+        # Commands reference dropdown (non-interactive)
+        ttk.Label(root, text="Commands (reference)").pack(pady=(12, 4))
 
-        def _on_close():  # [ADDED]
-            try:  # [ADDED]
-                self.speech_handler.stop_listening()  # [ADDED]
-            except Exception:  # [ADDED]
-                pass  # [ADDED]
-            self.stop()  # [ADDED]
-            root.destroy()  # [ADDED]
-        root.protocol("WM_DELETE_WINDOW", _on_close)  # [ADDED]
-        # [ADDED] ---------------------------------------------------------------------------
+        commands_reference = [
+            "— Select a command —",
+            # Movement
+            "move up [distance]",
+            "move down [distance]",
+            "move left [distance]",
+            "move right [distance]",
+            # Clicks
+            "click",
+            "right click",
+            "double click",
+            # Scroll
+            "scroll up",
+            "scroll down",
+            # Info
+            "show position",
+            # Stop
+            "stop",
+            "quit",
+            # Find Cursor
+            "find mouse",
+            "find my mouse",
+            "find cursor",
+            "find my cursor",
+            # Browser & Navigation
+            "open gmail",
+            "go to youtube",
+            "open gmail.com",
+            "open browser",
+            # Typing & Shortcuts
+            "type ...",
+            "press enter",
+            "press ctrl c",
+            "press ctrl v",
+            "new tab",
+            "close tab",
+            "next tab",
+            "previous tab",
+            "address bar",
+            "refresh",
+        ]
+
+        cmd_var = tk.StringVar(value=commands_reference[0])
+        cmd_combo = ttk.Combobox(
+            root,
+            textvariable=cmd_var,
+            values=commands_reference,
+            state="readonly",
+            width=38,   # tweak if you narrow the window further
+        )
+        cmd_combo.pack(padx=10, pady=(0, 8))
+
+
+        def _on_close():  
+            try:  
+                self.speech_handler.stop_listening()  
+            except Exception:  
+                pass  
+            self.stop()  
+            root.destroy()  
+        root.protocol("WM_DELETE_WINDOW", _on_close)  
+        # ---------------------------------------------------------------------------
 
         try:
             while self.running:
-                root.update_idletasks()  # [ADDED]
-                root.update()            # [ADDED]
-                status = "listening" if self.speech_handler.listening else "stopped"  # [ADDED]
-                status_var.set(f"Status: {status}")  # [ADDED]
+                root.update_idletasks()  
+                root.update()            
+                status = "listening" if self.speech_handler.listening else "stopped"  
+                status_var.set(f"Status: {status}")  
                 time.sleep(0.1)  # Keep main thread alive
         except KeyboardInterrupt:
             print("\nInterrupted by user...")

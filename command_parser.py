@@ -45,13 +45,13 @@ class CommandParser:
 
         text = text.lower().strip()
 
-        # [ADDED] Handle visual locate before generic 'where'
-        if self._is_find_command(text):  # [ADDED]
-            try:  # [ADDED]
-                self.mouse_controller.highlight_cursor()  # [ADDED]
-            except Exception as e:  # [ADDED]
-                print(f"Error highlighting cursor: {e}")  # [ADDED]
-            return  # [ADDED]
+        # Handle visual locate before generic 'where'
+        if self._is_find_command(text):  
+            try:  
+                self.mouse_controller.highlight_cursor()  
+            except Exception as e:  
+                print(f"Error highlighting cursor: {e}")  
+            return  
 
         # NEW: Browser navigation / open (URLs or aliases)
         if text.startswith(("open ", "go to ", "navigate to ")):  # NEW
@@ -193,9 +193,8 @@ class CommandParser:
         except Exception as e:
             print(f"Error scrolling: {e}")
 
-    def _is_find_command(self, text):  # [ADDED]
-        keywords = [  # [ADDED]
-            "find", "highlight cursor", "show cursor", "locate cursor",  # [ADDED]
-            "where is my cursor", "where's my cursor"  # [ADDED]
-        ]  # [ADDED]
-        return any(k in text for k in keywords)  # [ADDED]
+    def _is_find_command(self, text):  
+        keywords = [  
+            "find cursor", "find my cursor", "find mouse", "find my mouse" 
+        ]  
+        return any(k in text.lower().split(" ") for k in keywords)  
