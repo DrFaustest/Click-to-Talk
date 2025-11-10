@@ -18,12 +18,17 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
-      
+
       - name: Install dependencies
         run: |
           pip install pyinstaller
-          pip install -r requirements.txt
-      
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            pip install -r requirements.txt
+          else
+            grep -v "pyobjc" requirements.txt | pip install -r /dev/stdin
+          fi
+        shell: bash
+    
       - name: Build executable
         run: pyinstaller --onefile --windowed main.py
       
