@@ -24,7 +24,8 @@ jobs:
       - name: Prepare Linux requirements
         run: |
           # Remove known-missing or mac-only packages and Windows-only audio build on Linux
-          grep -v -E '^(audioop-lts|pyobjc-core|pyobjc-framework-Cocoa|pyobjc-framework-Quartz|rubicon-objc|PyAudio)$' requirements.txt > tmp-requirements.txt
+          # Match package names with optional version specifiers (e.g. pyobjc-core==11.1)
+          grep -v -E '^(audioop-lts|pyobjc-core|pyobjc-framework-Cocoa|pyobjc-framework-Quartz|rubicon-objc|PyAudio)([=<>!].*|$)' requirements.txt > tmp-requirements.txt
           echo "Prepared tmp-requirements.txt"
         shell: bash
 

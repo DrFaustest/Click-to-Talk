@@ -19,8 +19,9 @@ jobs:
         shell: pwsh
         run: |
           # Remove packages that are not available on Windows runners
+          # Match package names with optional version specifiers (e.g. pyobjc-core==11.1)
           Get-Content requirements.txt |
-            Where-Object { $_ -notmatch '^(audioop-lts|pyobjc-core|pyobjc-framework-Cocoa|pyobjc-framework-Quartz|rubicon-objc|PyAudio)' } |
+            Where-Object { $_ -notmatch '^(audioop-lts|pyobjc-core|pyobjc-framework-Cocoa|pyobjc-framework-Quartz|rubicon-objc|PyAudio)([=<>!].*|$)' } |
             Set-Content tmp-requirements.txt
           Write-Output "Prepared tmp-requirements.txt"
 
