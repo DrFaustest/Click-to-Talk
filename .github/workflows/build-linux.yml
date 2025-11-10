@@ -1,0 +1,46 @@
+name: Build Executable (Linux)
+on:
+  push:
+    branches: [hunter]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install OS packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y portaudio19-dev build-essential libsndfile1-dev
+        shell: bash
+
+      - name: Prepare Linux requirements
+        run: |
+          # Remove known-missing or mac-only packages and Windows-only audio build on Linux
+          grep -v -E '^(audioop-lts|pyobjc-core|pyobjc-framework-Cocoa|pyobjc-framework-Quartz|rubicon-objc|PyAudio)$' requirements.txt > tmp-requirements.txt
+          echo "Prepared tmp-requirements.txt"
+        shell: bash
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r tmp-requirements.txt
+        shell: bash
+
+      - name: Build executable
+        run: |
+          pyinstaller --onefile --windowed main.py
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: executable-linux
+          path: dist/*
