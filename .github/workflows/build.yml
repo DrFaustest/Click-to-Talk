@@ -2,36 +2,48 @@ name: Build Executables
 on:
   push:
     branches: [hunter]
-  
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          # Use 3.11 to improve compatibility with binary packages like PyAudio
+          python-version: '3.11'
+
+      - name: Install OS dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y portaudio19-dev build-essential libsndfile1-dev
+        shell: bash
+
+      - name: Install OS dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          # Homebrew is available on macOS runners
+          brew update
+          brew install portaudio
+        shell: bash
 
       - name: Install dependencies
         run: |
-          pip install pyinstaller
-          if [ "$RUNNER_OS" == "macOS" ]; then
-            pip install -r requirements.txt
-          else
-            grep -v "pyobjc" requirements.txt | pip install -r /dev/stdin
-          fi
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt
         shell: bash
-    
+
       - name: Build executable
         run: pyinstaller --onefile --windowed main.py
-      
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
