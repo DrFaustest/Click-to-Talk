@@ -21,7 +21,7 @@ After evaluating the project requirements and original design intent, the implem
 ### Packages/Libraries
 - **speech_recognition**: For converting speech to text using various APIs (Google, Sphinx, etc.).
 - **pyautogui**: For programmatic mouse and keyboard control.
-- **pyaudio** (dependency of speech_recognition): For microphone audio input.
+- **sounddevice** (backend for speech_recognition): For microphone audio input (modern replacement for deprecated PyAudio).
 - **Optional: pynput**: Alternative for more advanced input simulation if needed.
 
 All packages can be installed via pip and are cross-platform (Windows, macOS, Linux).

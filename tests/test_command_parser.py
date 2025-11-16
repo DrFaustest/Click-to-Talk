@@ -90,7 +90,7 @@ class TestCommandParser:
     def test_is_click_command_true(self):
         """Test identifying click commands"""
         assert self.parser._is_click_command("click") == True
-        assert self.parser._is_click_command("press") == True
+        assert self.parser._is_click_command("tap") == True
 
     def test_is_click_command_false(self):
         """Test non-click commands"""

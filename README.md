@@ -9,16 +9,13 @@ By translating voice input into precise mouse movements and clicks, the applicat
 ## Installation
 
 ### Prerequisites
-- Python 3.12 or lower
+- Python 3.10 - 3.14
 - Microphone (built-in or external)
 - Windows, macOS, or Linux
 
 ### Installing Python 
 For Windows
-- Download the Windows installer:
-
-https://www.python.org/downloads/release/python-3117/
-
+- Download the latest **Python 3.14.x** installer from the [official downloads page](https://www.python.org/downloads/).
 - Right-click → Run as administrator.
 
 - In the first screen:
@@ -42,14 +39,14 @@ https://www.python.org/downloads/release/python-3117/
 - Click Install (or Repair if already installed).
 
 For Mac/Linux
-- macOS: use the official installer or 
+- macOS: use the universal installer from python.org or 
 ```bash
-brew install python@3.11
+brew install python@3.14
 ```
-- Ubuntu/Debian (example):
+- Ubuntu/Debian (example using the `deadsnakes` PPA if 3.14 is not yet available in the default repositories):
 ```bash
 sudo apt-get update
-sudo apt-get install -y python3.11 python3.11-venv python3.11-distutils
+sudo apt-get install -y python3.14 python3.14-venv python3.14-distutils
 ```
 
 ### Install from Source
@@ -57,12 +54,15 @@ sudo apt-get install -y python3.11 python3.11-venv python3.11-distutils
 git clone <repository-url>
 cd click-to-talk
 #Run these commands in terminal once inside directory to initialize environment
-py -3.11 -m venv venv
+py -3.14 -m venv venv
 venv\Scripts\activate
-# source venv/bin/activate if Mac/Linux
-python --version   # should be 3.11.x
+# On macOS/Linux use: python3.14 -m venv venv && source venv/bin/activate
+python --version   # should be 3.14.x
 pip install -r requirements.txt
 ```
+
+> The dependency pins now use minimum versions so that pip can resolve builds compatible with Python 3.14 automatically.
+> **Note**: This application uses `sounddevice` for microphone input, which is a modern, actively maintained alternative to the deprecated PyAudio library.
 
 ### Run the Application
 ```bash
@@ -93,13 +93,20 @@ python main.py
 - Error handling: Graceful handling of recognition failures
 - Emergency stop: Voice commands to quit immediately
 
+### Browser Preferences
+- Voice navigation commands (e.g., "open gmail", "go to youtube", "open browser") now launch URLs with the **machine's default browser/application**, so your existing OS-level preference is respected automatically.
+- To force a specific browser, set `preferred_browser` inside `config.py`.  
+  - macOS: use the application name you would pass to `open -a`, e.g., `"Brave Browser"`.  
+  - Windows/Linux: provide the executable name or full path (quotes are fine), e.g., `"C:\\Program Files\\Mozilla Firefox\\firefox.exe"` or `"firefox"`.
+- `browser_open_target` controls what URL is used when a command just asks to "open browser" (defaults to `about:blank`).
+
 ## Technology
 The implementation relies on widely available hardware and software:
 
 - **Input Device:** Computer's built-in microphone
 - **Voice Recognition:** Google Speech Recognition API via Python speech_recognition library
 - **Mouse Control:** PyAutoGUI for cross-platform mouse simulation
-- **Platform:** Python 3.8+ with cross-platform compatibility
+- **Platform:** Python 3.10 - 3.14 with cross-platform compatibility
 
 ## Team Organization
 

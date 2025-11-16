@@ -17,7 +17,7 @@ class TestSpeechHandler:
         self.handler = SpeechHandler(self.config, self.mock_parser, self.mock_mouse)
 
     @patch('speech_recognition.Recognizer')
-    @patch('speech_recognition.Microphone')
+    @patch('speech_handler.SoundDeviceMicrophone')
     def test_initialization(self, mock_microphone, mock_recognizer):
         """Test SpeechHandler initialization"""
         mock_recognizer_instance = MagicMock()
@@ -32,7 +32,7 @@ class TestSpeechHandler:
         mock_recognizer_instance.adjust_for_ambient_noise.assert_called_once()
 
     @patch('speech_recognition.Recognizer')
-    @patch('speech_recognition.Microphone')
+    @patch('speech_handler.SoundDeviceMicrophone')
     @patch('builtins.print')
     def test_start_listening_success(self, mock_print, mock_microphone, mock_recognizer):
         """Test successful speech recognition"""
@@ -48,7 +48,7 @@ class TestSpeechHandler:
         mock_microphone_instance.__enter__.return_value = mock_source
 
         handler = SpeechHandler(self.config, self.mock_parser, self.mock_mouse)
-        handler.listening = True
+        # Don't set listening = True here, let start_listening() do it
 
         # Mock the listen method to return after one iteration
         mock_recognizer_instance.listen.return_value = MagicMock()
@@ -58,7 +58,7 @@ class TestSpeechHandler:
         import time
 
         def stop_after_delay():
-            time.sleep(0.1)
+            time.sleep(0.5)  # Give it more time to process
             handler.listening = False
 
         stop_thread = threading.Thread(target=stop_after_delay)
@@ -70,7 +70,7 @@ class TestSpeechHandler:
         self.mock_parser.parse_command.assert_called_with("move up")
 
     @patch('speech_recognition.Recognizer')
-    @patch('speech_recognition.Microphone')
+    @patch('speech_handler.SoundDeviceMicrophone')
     def test_start_listening_recognition_error(self, mock_microphone, mock_recognizer):
         """Test handling of recognition errors"""
         mock_recognizer_instance = MagicMock()

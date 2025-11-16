@@ -13,6 +13,7 @@ class CommandParser:
         self.mouse_controller = None  # Will be set by main app
         self.window_manager = None    # NEW: injected for browser/site navigation
         self.keyboard_controller = None  # NEW: injected for typing/shortcuts
+        self.gui_controller = None    # NEW: injected for GUI show/hide
 
     def set_mouse_controller(self, mouse_controller):
         """Set the mouse controller instance"""
@@ -25,6 +26,10 @@ class CommandParser:
     # NEW: allow main.py to inject KeyboardController
     def set_keyboard_controller(self, kc):
         self.keyboard_controller = kc  # NEW
+    
+    def set_gui_controller(self, gc):
+        """Set the GUI controller instance"""
+        self.gui_controller = gc
 
     def _primary_mod(self) -> str:
         """NEW: Return platform's primary modifier for common shortcuts."""
@@ -44,6 +49,17 @@ class CommandParser:
             return
 
         text = text.lower().strip()
+        
+        # Check for GUI show/hide commands first
+        if text in self.config.show_gui_commands:
+            if self.gui_controller:
+                self.gui_controller.show_gui()
+            return
+        
+        if text in self.config.hide_gui_commands:
+            if self.gui_controller:
+                self.gui_controller.hide_gui()
+            return
 
         # Handle visual locate before generic 'where'
         if self._is_find_command(text):  

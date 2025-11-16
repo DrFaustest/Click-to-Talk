@@ -1,5 +1,6 @@
-SpeechRecognition==3.10.1
-PyAutoGUI==0.9.54
-pyaudio==0.2.14
-pytest==7.4.0
-pytest-mock==3.10.0
+SpeechRecognition>=3.10.1
+PyAutoGUI>=0.9.54
+sounddevice>=0.4.6
+numpy>=1.24.0
+pytest>=8.0.0
+pytest-mock>=3.12.0
