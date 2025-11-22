@@ -13,6 +13,8 @@ class CommandParser:
         self.mouse_controller = None  # Will be set by main app
         self.window_manager = None    # NEW: injected for browser/site navigation
         self.keyboard_controller = None  # NEW: injected for typing/shortcuts
+        self.ui_minimize_callback = None   # for GUI minimize
+        self.ui_maximize_callback = None   # for GUI maximize
 
     def set_mouse_controller(self, mouse_controller):
         """Set the mouse controller instance"""
@@ -25,6 +27,12 @@ class CommandParser:
     # NEW: allow main.py to inject KeyboardController
     def set_keyboard_controller(self, kc):
         self.keyboard_controller = kc  # NEW
+
+    def set_ui_callbacks(self, minimize_callback=None, maximize_callback=None):
+        """Set callbacks used for GUI minimize/maximize via voice commands."""
+        self.ui_minimize_callback = minimize_callback
+        self.ui_maximize_callback = maximize_callback
+
 
     def _primary_mod(self) -> str:
         """NEW: Return platform's primary modifier for common shortcuts."""
@@ -52,6 +60,21 @@ class CommandParser:
             except Exception as e:  
                 print(f"Error highlighting cursor: {e}")  
             return  
+        
+        # GUI minimize / maximize via voice
+        if self._is_minimize_command(text):
+            if self.ui_minimize_callback:
+                self.ui_minimize_callback()
+            else:
+                print("Minimize panel requested (no UI callback configured).")
+            return
+
+        if self._is_maximize_command(text):
+            if self.ui_maximize_callback:
+                self.ui_maximize_callback()
+            else:
+                print("Maximize panel requested (no UI callback configured).")
+            return
 
         # NEW: Browser navigation / open (URLs or aliases)
         if text.startswith(("open ", "go to ", "navigate to ")):  # NEW
@@ -198,3 +221,21 @@ class CommandParser:
             "find cursor", "find my cursor", "find mouse", "find my mouse" 
         ]  
         return any(k in text.lower().split(" ") for k in keywords)  
+
+    def _is_minimize_command(self, text):
+        keywords = [
+            "minimize panel",
+            "minimize gui",
+            "hide panel",
+            "hide controls",
+        ]
+        return any(k in text for k in keywords)
+
+    def _is_maximize_command(self, text):
+        keywords = [
+            "maximize panel",
+            "maximize gui",
+            "show panel",
+            "show controls",
+        ]
+        return any(k in text for k in keywords)
