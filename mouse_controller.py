@@ -8,6 +8,7 @@ from config import Config
 import threading  
 import tkinter as tk  
 import time  
+import sys
 
 class MouseController:
     def __init__(self, config):
@@ -70,7 +71,27 @@ class MouseController:
         print(f"Cursor position: ({x}, {y})")
 
     def highlight_cursor(self):  
-        """Briefly display a ring around the current cursor position."""  
+        """Highlight or locate the cursor.
+
+        On macOS, avoid creating Tk windows from a background thread
+        (which crashes with 'NSWindow should only be instantiated on the main thread').
+        Use a simple mouse wiggle as a fallback. On other platforms,
+        show a Tk ring around the cursor.
+        """  
+        # --- macOS fallback: no Tk, just a quick wiggle ---
+        if sys.platform == "darwin":
+            try:
+                x, y = pyautogui.position()
+                # small wiggle to draw attention
+                pyautogui.moveTo(x + 10, y, duration=0.05)
+                pyautogui.moveTo(x - 10, y, duration=0.05)
+                pyautogui.moveTo(x, y, duration=0.05)
+            except Exception:
+                pass
+            print("Cursor highlighted (macOS fallback wiggle)")
+            return  
+
+        # --- original Tk highlight for non-macOS ---
         def _show():  
             try:  
                 x, y = pyautogui.position()  
@@ -104,7 +125,7 @@ class MouseController:
 
                 if not transparent_supported:  
                     canvas.create_oval(  
-                        border + 2, border + 2, size - (border + 2), size - (border + 2),  
+                        border + 2, border + 2, size - (border + 2),  
                         outline="", fill="#E6F6FF"  
                     )  
 
@@ -114,4 +135,4 @@ class MouseController:
                 pass  
 
         threading.Thread(target=_show, daemon=True).start()  
-        print("Cursor highlighted (find)")  
+        print("Cursor highlighted (find)")

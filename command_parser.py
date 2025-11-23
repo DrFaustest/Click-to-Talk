@@ -216,12 +216,15 @@ class CommandParser:
         except Exception as e:
             print(f"Error scrolling: {e}")
 
-    def _is_find_command(self, text):  
-        keywords = [  
-            "find cursor", "find my cursor", "find mouse", "find my mouse" 
-        ]  
-        return any(k in text.lower().split(" ") for k in keywords)  
-
+    def _is_find_command(self, text):
+        keywords = [
+            "find cursor", "find my cursor", "find mouse", "find my mouse"
+        ]
+        t = text.lower()
+        hit = any(k in t for k in keywords)
+        print(f"[DEBUG] _is_find_command: text='{t}', hit={hit}")
+        return hit
+  
     def _is_minimize_command(self, text):
         keywords = [
             "minimize panel",

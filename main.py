@@ -24,7 +24,10 @@ class ClickToTalkApp:
         self.mouse_controller = MouseController(self.config)
         self.command_parser = CommandParser(self.config)
         self.keyboard_controller = KeyboardController(self.config)
-        self.window_manager = WindowManager(self.config)
+        self.window_manager = WindowManager(
+            site_aliases=self.config.site_aliases,
+            preferred_browser=self.config.preferred_browser,
+        )
 
         # Wire controllers into parser
         self.command_parser.set_mouse_controller(self.mouse_controller)
