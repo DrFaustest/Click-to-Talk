@@ -7,167 +7,146 @@ This adaptive technology is designed to support individuals with fine-motor and 
 
 By translating voice input into precise mouse movements and clicks, the application reduces both the **gulf of execution** and the **gulf of evaluation**, enabling users to navigate any application or website more effectively and independently.
 
-## Installation
+Click-to-Talk is a human-computer interaction project that demonstrates voice-controlled mouse functionality. Built in Python, it translates spoken commands into real-time cursor movements and clicks using speech recognition and PyAutoGUI. This implementation showcases an accessibility-focused design, modular architecture, and potential for hands-free computing.
 
-### Prerequisites
+## Demo Video
 
-* Python 3.12 or lower
-* Microphone (built-in or external)
-* Windows, macOS, or Linux
+Watch the initial demonstration of Click-to-Talk in action:
 
-### Installing Python
+[![Click-to-Talk Demo Video](https://img.youtube.com/vi/ZgICXJpQtHA/maxresdefault.jpg)](https://www.youtube.com/watch?v=ZgICXJpQtHA)
 
-For Windows
+**See voice-controlled mouse navigation, command parsing, and accessibility features in real-time.**
 
-* Download the Windows installer:
+---
 
-[https://www.python.org/downloads/release/python-3117/](https://www.python.org/downloads/release/python-3117/)
+## Documentation Hub
 
-* Right-click → Run as administrator.
+Complete documentation is organized into dedicated guides:
 
-* In the first screen:
+| Document | Purpose |
+|----------|---------|
+| **[Installation Guide](docs/INSTALLATION.md)** | Setup instructions for Windows, macOS, and Linux |
+| **[Usage Guide](docs/USAGE.md)** | Complete voice commands reference and examples |
+| **[Architecture](docs/ARCHITECTURE.md)** | Technical design, module structure, and system overview |
+| **[Project Roadmap](docs/ROADMAP.md)** | Development phases, future features, and vision |
+| **[Testing Guide](TESTING.md)** | Test suite, coverage details, and CI/CD setup |
 
-  * Check “Add Python to PATH”
-  * Click Customize installation
-  * Keep defaults → Next.
+## Quick Start
 
-* In Advanced Options:
+### 1. Install the Application
 
-  * Add Python to environment variables
-  * Install for all users (recommended)
-  * Create shortcuts for installed applications
-  * (Optional) Associate files with Python
+See the full [**Installation Guide**](docs/INSTALLATION.md) for detailed setup instructions.
 
-* Click Install (or Repair if already installed).
-
-For Mac/Linux
-
-* macOS: use the official installer or
+**Quick install:**
 
 ```bash
-brew install python@3.11
-```
-
-* Ubuntu/Debian (example):
-
-```bash
-sudo apt-get update
-sudo apt-get install -y python3.11 python3.11-venv python3.11-distutils
-```
-
-### Install from Source
-
-```bash
-git clone <repository-url>
-cd click-to-talk
-
-# Initialize virtual environment
-py -3.11 -m venv venv
-venv\Scripts\activate
-# source venv/bin/activate if Mac/Linux
-
-python --version   # should be 3.11.x
+git clone https://github.com/DrFaustest/Click-to-Talk.git
+cd Click-to-Talk
+python -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
-```
-
-### Run the Application
-
-```bash
 python main.py
 ```
 
-## Usage
+### 2. Learn Voice Commands
 
-### Voice Commands
+See the [**Usage Guide**](docs/USAGE.md) for a complete reference of all voice commands.
 
-* **Movement**:
-  "move up", "move down", "move left", "move right" *(optional distance)*
+**Common commands:**
+* `"move up 100"` – Move cursor up by 100 pixels
+* `"click"` – Left-click at cursor position
+* `"scroll down"` – Scroll downward
+* `"open gmail"` – Open Gmail in browser
+* `"type hello"` – Type the text "hello"
+* `"press ctrl c"` – Copy to clipboard
 
-* **Clicks**:
-  "click", "left click", "right click", "double click"
+### 3. Understand the System
 
-* **Scroll**:
-  "scroll up", "scroll down"
+Curious about how it works? See [**Architecture**](docs/ARCHITECTURE.md) for:
+* System design and module structure
+* Data flow and threading model
+* How to extend with custom commands
 
-* **Info**:
-  "show position"
+## Features
 
-* **Find Cursor**:
-  "find mouse", "find my mouse",
-  "find cursor", "find my cursor"
+### Voice Control
+* **Movement:** Precise cursor control with configurable distance (1–500px)
+* **Clicking:** Left, right, and double-click support
+* **Scrolling:** Scroll any document or web page
+* **Typing:** Dictate text directly into any text field
+* **Keyboard:** Press keys, combinations, and shortcuts (Ctrl+C, Alt+Tab, etc.)
+* **Browser:** Open websites, manage tabs, navigate pages
+* **GUI Control:** Show/hide the control panel with voice
 
-* **Browser / Navigation**:
-  "open gmail", "go to youtube",
-  "open gmail.com", "open browser"
+### Accessibility Features
+* **Sliding Dock Panel:** Non-intrusive panel that auto-hides after 30 seconds
+* **Distance Slider:** Adjust default movement distance (1–500px) for different tasks
+* **Cursor Highlighting:** Find your cursor with the "find cursor" command
+* **Position Display:** Know exactly where your cursor is ("show position")
+* **Safety Limits:** Failsafe detection, screen boundary checking
 
-* **Typing / Shortcuts**:
-  "type hello world",
-  "press enter", "press ctrl c", "press ctrl v",
-  "new tab", "close tab", "next tab", "previous tab",
-  "address bar", "refresh"
+### Safety & Reliability
+* **Failsafe Detection:** Emergency stop by moving cursor to screen corner (0,0)
+* **Movement Limits:** Enforces min/max distance to prevent runaway mouse
+* **Error Handling:** Graceful recovery from speech recognition timeouts
+* **Platform Support:** Works on Windows, macOS, and Linux
 
-* **GUI Controls (NEW)**:
+## Technology Stack
 
-  * *Minimize the panel*:
-    "minimize panel", "minimize gui", "hide panel", "hide controls"
-  * *Show / maximize the panel*:
-    "maximize panel", "maximize gui", "show panel", "show controls"
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **GUI** | Tkinter | Window management and UI |
+| **Voice Input** | `speech_recognition` | Google Speech Recognition API |
+| **Mouse Control** | PyAutoGUI | Cross-platform mouse automation |
+| **Keyboard Control** | PyAutoGUI | Cross-platform keyboard automation |
+| **Testing** | pytest, pytest-cov | Unit tests and code coverage |
+| **Language** | Python 3.11+ | Programming language |
 
-* **Stop**:
-  "stop", "quit", "exit"
+See [**Architecture Guide**](docs/ARCHITECTURE.md) for technical details.
 
-### Examples
+## Testing
 
-* "move up 100" – Move cursor up by 100 pixels
-* "click" – Perform left-click
-* "scroll down" – Scroll downward
-* "show position" – Display current cursor coordinates
+The project includes a comprehensive test suite with **95% code coverage** and **67 tests**.
 
-### Safety Features
+**Run all tests with coverage:**
 
-* Failsafe corner detection
-* Movement distance limits
-* Graceful speech recognition error handling
-* Emergency quit commands
+```bash
+xvfb-run -a python -m pytest tests/ --cov=. --cov-report=term
+```
 
-## Sliding Dock GUI Panel (NEW)
+**Quick test run (no coverage):**
 
-A redesigned accessibility panel improves usability while keeping the screen unobstructed.
+```bash
+xvfb-run -a python -m pytest tests/ -q
+```
 
-### Features
+See [**Testing Guide**](TESTING.md) for:
+* Detailed coverage breakdown by module
+* How to run specific tests
+* Known limitations and blind spots
+* CI/CD integration examples
 
-* Slide-out / slide-in docking panel
-* Dockable to left or right screen edge
-* Smooth sliding animation
-* Auto-hide after 30 seconds
-* Always-on-top
-* Pull-tab (≡) always remains visible when minimized
-* Contains:
+## Project Roadmap
 
-  * Start / Stop Listening buttons (stacked for narrow layout)
-  * Movement distance slider
-  * Commands Reference dropdown (informational only)
+Click-to-Talk is actively developed with a clear vision. See [**Project Roadmap**](docs/ROADMAP.md) for:
 
-### Removed GUI Buttons (now voice-only)
+* **Completed Phases:** Prototype, browser control, accessibility enhancements
+* **Current Work:** Full mouse replacement capability
+* **Future Plans:** Offline speech recognition, ML-based intent parsing, plugin system
+* **Long-term Vision:** Cross-platform, multi-modal control interface
 
-* “Show Position”
-* “Find Cursor”
+### Development Phases
 
-### Behavior
+| Phase | Status | Focus |
+|-------|--------|-------|
+| Phase 1: Prototype | Complete | Basic voice control |
+| Phase 2: Browser | Complete | Web navigation |
+| Phase 3: Accessibility | Complete | Full test suite, comprehensive docs |
+| Phase 4: Full Mouse | In Progress | Advanced gestures, drag-and-drop |
 
-* Panel starts fully visible on launch
-* Automatically hides after inactivity
-* Voice commands can minimize or restore the panel
+See [**Roadmap**](docs/ROADMAP.md) for detailed planning, research areas, and contribution opportunities.
 
-## Technology
-
-* **Microphone Input:** Built-in or external
-* **Voice Recognition:** Google Speech Recognition (via `speech_recognition`)
-* **Mouse Control:** PyAutoGUI
-* **GUI Framework:** Tkinter
-* **Platform:** Python 3.8+ (recommended Python 3.11.x)
-
-## Team Organization
+## Team
 
 * **Megan Backman** – Documentation Team Lead
 * **Allison Coates** – Documentation Team
@@ -176,40 +155,27 @@ A redesigned accessibility panel improves usability while keeping the screen uno
 * **Alexander Jimenez** – Implementation Team Lead
 * **Hunter Pope** – Implementation Team
 
----
+## Contributing
 
-## Roadmap
-
-1. **Phase 1 – Prototype**
-
-   * Basic movement + clicks
-   * Chrome integration
-
-2. **Phase 2 – Browser Control**
-
-   * Navigation commands
-   * Address bar control
-
-3. **Phase 3 – Enhanced Accessibility**
-
-   * Cursor highlighting (“find”)
-   * Expanded natural language
-
-4. **Phase 4 – Full Mouse Replacement**
-
-   * Voice-driven complete interface
-   * Possible integration with OS accessibility APIs
-
----
+We welcome contributions! See [**Project Roadmap**](docs/ROADMAP.md#contributing-to-the-roadmap) for:
+* How to report bugs
+* How to request features
+* How to contribute code
+* Development setup instructions
 
 ## License
 
 TBD (to be decided by the team).
 
----
-
 ## Acknowledgments
 
 This project is inspired by the need for **inclusive, accessible technology** that empowers individuals with motor coordination challenges to navigate computers confidently and independently.
 
+We acknowledge the importance of accessibility in computing and are committed to creating tools that eliminate barriers for all users.
+
 ---
+
+**Last Updated:** December 7, 2025  
+**Version:** 1.0.0-alpha
+
+For more information, visit the [**documentation hub**](#-documentation-hub) or open an issue on [GitHub](https://github.com/DrFaustest/Click-to-Talk/issues).

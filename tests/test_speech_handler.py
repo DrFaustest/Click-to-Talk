@@ -3,101 +3,92 @@ Tests for speech_handler.py
 """
 
 import pytest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
+import speech_recognition as sr
 from speech_handler import SpeechHandler
 from config import Config
 
 
 class TestSpeechHandler:
     def setup_method(self):
-        """Setup before each test"""
-        self.config = Config()
-        self.mock_parser = MagicMock()
-        self.mock_mouse = MagicMock()
-        self.handler = SpeechHandler(self.config, self.mock_parser, self.mock_mouse)
+           self.config = Config()
+           self.mock_parser = MagicMock()
+           self.mock_mouse = MagicMock()
+           with patch('speech_recognition.Microphone'), \
+               patch.object(sr.Recognizer, 'adjust_for_ambient_noise'):
+              self.handler = SpeechHandler(self.config, self.mock_parser, self.mock_mouse)
 
-    @patch('speech_recognition.Recognizer')
+    def test_initialization(self):
+        assert self.handler.config == self.config
+        assert self.handler.command_parser == self.mock_parser
+        assert self.handler.mouse_controller == self.mock_mouse
+        assert self.handler.listening == False
+        assert self.handler.stop_callback is None
+
+    def test_set_stop_callback(self):
+        mock_callback = MagicMock()
+        self.handler.set_stop_callback(mock_callback)
+        assert self.handler.stop_callback == mock_callback
+
+    def test_start_listening_already_listening(self, capsys):
+        self.handler.listening = True
+        self.handler.start_listening()
+        captured = capsys.readouterr()
+        assert "Already listening" in captured.out
+
+    def test_stop_listening(self):
+        self.handler.listening = True
+        self.handler.stop_listening()
+        assert self.handler.listening == False
+
+    def test_start_listening_already_listening_noop(self):
+        self.handler.listening = True
+        with patch.object(self.handler.recognizer, 'listen') as mock_listen:
+            self.handler.start_listening()
+        mock_listen.assert_not_called()
+
     @patch('speech_recognition.Microphone')
-    def test_initialization(self, mock_microphone, mock_recognizer):
-        """Test SpeechHandler initialization"""
-        mock_recognizer_instance = MagicMock()
-        mock_recognizer.return_value = mock_recognizer_instance
-        mock_microphone_instance = MagicMock()
-        mock_microphone.return_value = mock_microphone_instance
-
-        handler = SpeechHandler(self.config, self.mock_parser, self.mock_mouse)
-
-        mock_recognizer.assert_called_once()
-        mock_microphone.assert_called_once()
-        mock_recognizer_instance.adjust_for_ambient_noise.assert_called_once()
-
-    @patch('speech_recognition.Recognizer')
-    @patch('speech_recognition.Microphone')
-    @patch('builtins.print')
-    def test_start_listening_success(self, mock_print, mock_microphone, mock_recognizer):
-        """Test successful speech recognition"""
-        # Setup mocks
-        mock_recognizer_instance = MagicMock()
-        mock_recognizer_instance.recognize_google.return_value = "move up"
-        mock_recognizer.return_value = mock_recognizer_instance
-
-        mock_microphone_instance = MagicMock()
-        mock_microphone.return_value = mock_microphone_instance
-
+    @patch.object(sr.Recognizer, 'adjust_for_ambient_noise')
+    def test_start_listening_stop_command(self, mock_adjust, mock_mic):
         mock_source = MagicMock()
-        mock_microphone_instance.__enter__.return_value = mock_source
+        mock_mic.return_value.__enter__.return_value = mock_source
 
         handler = SpeechHandler(self.config, self.mock_parser, self.mock_mouse)
-        handler.listening = True
+        handler.stop_callback = MagicMock()
 
-        # Mock the listen method to return after one iteration
-        mock_recognizer_instance.listen.return_value = MagicMock()
-
-        # Run start_listening briefly
-        import threading
-        import time
-
-        def stop_after_delay():
-            time.sleep(0.1)
-            handler.listening = False
-
-        stop_thread = threading.Thread(target=stop_after_delay)
-        stop_thread.start()
+        handler.recognizer.listen = MagicMock(return_value="audio")
+        handler.recognizer.recognize_google = MagicMock(return_value="stop")
 
         handler.start_listening()
 
-        # Verify command was parsed
-        self.mock_parser.parse_command.assert_called_with("move up")
+        handler.stop_callback.assert_called_once()
+        assert handler.listening is False
 
-    @patch('speech_recognition.Recognizer')
     @patch('speech_recognition.Microphone')
-    def test_start_listening_recognition_error(self, mock_microphone, mock_recognizer):
-        """Test handling of recognition errors"""
-        mock_recognizer_instance = MagicMock()
-        mock_recognizer_instance.listen.return_value = MagicMock()
-        mock_recognizer_instance.recognize_google.side_effect = Exception("Recognition failed")
-        mock_recognizer.return_value = mock_recognizer_instance
-
-        mock_microphone_instance = MagicMock()
-        mock_microphone.return_value = mock_microphone_instance
+    @patch.object(sr.Recognizer, 'adjust_for_ambient_noise')
+    def test_start_listening_error_branches(self, mock_adjust, mock_mic):
+        mock_source = MagicMock()
+        mock_mic.return_value.__enter__.return_value = mock_source
 
         handler = SpeechHandler(self.config, self.mock_parser, self.mock_mouse)
-        handler.listening = True  # Start with listening = True
 
-        # Mock the microphone context manager
-        mock_source = MagicMock()
-        mock_microphone_instance.__enter__.return_value = mock_source
+        calls = {'count': 0}
 
-        # Use a thread to stop listening after a short delay
-        import threading
-        import time
+        def listen_side_effect(*args, **kwargs):
+            calls['count'] += 1
+            if calls['count'] == 1:
+                raise sr.WaitTimeoutError()
+            if calls['count'] >= 4:
+                handler.listening = False
+            return f"audio{calls['count']}"
 
-        def stop_after_delay():
-            time.sleep(0.1)
-            handler.listening = False
+        handler.recognizer.listen = MagicMock(side_effect=listen_side_effect)
+        handler.recognizer.recognize_google = MagicMock(side_effect=[
+            sr.UnknownValueError(),
+            sr.RequestError("boom"),
+            Exception("other"),
+        ])
 
-        stop_thread = threading.Thread(target=stop_after_delay)
-        stop_thread.start()
-
-        # Should not raise exception
         handler.start_listening()
+
+        assert handler.recognizer.listen.call_count >= 4
