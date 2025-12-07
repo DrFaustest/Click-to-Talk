@@ -167,6 +167,18 @@ A redesigned accessibility panel improves usability while keeping the screen uno
 * **GUI Framework:** Tkinter
 * **Platform:** Python 3.8+ (recommended Python 3.11.x)
 
+## Testing
+
+For comprehensive testing information, including how to run tests, coverage details, and known limitations, see [`TESTING.md`](TESTING.md).
+
+**Quick Start:**
+
+```bash
+xvfb-run -a python -m pytest tests/ --cov=. --cov-report=term
+```
+
+**Latest Results:** 67 tests passed, **95% coverage** overall. Core modules (`config`, `keyboard_controller`, `setup`) at 100%; speech and command parsing at 98%; GUI components partially covered via mocking.
+
 ## Team Organization
 
 * **Megan Backman** – Documentation Team Lead
