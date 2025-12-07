@@ -1,0 +1,43 @@
+name: Build Executable (Windows)
+on:
+  push:
+    branches: [hunter]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Prepare Windows requirements
+        shell: pwsh
+        run: |
+          # Remove packages that are not available on Windows runners
+          # Match package names with optional version specifiers (e.g. pyobjc-core==11.1)
+          Get-Content requirements.txt |
+            Where-Object { $_ -notmatch '^(audioop-lts|pyobjc-core|pyobjc-framework-Cocoa|pyobjc-framework-Quartz|rubicon-objc|PyAudio)([=<>!].*|$)' } |
+            Set-Content tmp-requirements.txt
+          Write-Output "Prepared tmp-requirements.txt"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r tmp-requirements.txt
+        shell: bash
+
+      - name: Build executable
+        run: |
+          pyinstaller --onefile --windowed main.py
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: executable-windows
+          path: dist/*
