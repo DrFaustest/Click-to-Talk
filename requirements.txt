@@ -1,5 +1,5 @@
 altgraph==0.17.4
-audioop-lts==0.2.2
+audioop-lts==0.2.2; python_version >= "3.13"
 certifi==2025.10.5
 charset-normalizer==3.4.3
 idna==3.10
@@ -14,9 +14,9 @@ PyGetWindow==0.0.9
 pyinstaller==6.16.0
 pyinstaller-hooks-contrib==2025.9
 PyMsgBox==2.0.1
-pyobjc-core==11.1
-pyobjc-framework-Cocoa==11.1
-pyobjc-framework-Quartz==11.1
+pyobjc-core==11.1; platform_system == "Darwin"
+pyobjc-framework-Cocoa==11.1; platform_system == "Darwin"
+pyobjc-framework-Quartz==11.1; platform_system == "Darwin"
 pyperclip==1.11.0
 PyRect==0.2.0
 PyScreeze==1.0.1
@@ -24,7 +24,16 @@ pytest==7.4.0
 pytest-mock==3.10.0
 pytweening==1.2.0
 requests==2.32.5
-rubicon-objc==0.5.2
+rubicon-objc==0.5.2; platform_system == "Darwin"
+pyperclip==1.11.0
+PyRect==0.2.0
+PyScreeze==1.0.1
+pytest==7.4.0
+pytest-cov==4.1.0
+pytest-mock==3.10.0
+pytweening==1.2.0
+requests==2.32.5
+rubicon-objc==0.5.2; platform_system == "Darwin"
 setuptools==80.9.0
 SpeechRecognition==3.10.1
 standard-aifc==3.13.0

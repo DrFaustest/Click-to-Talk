@@ -55,6 +55,11 @@ class TestCommandParser:
         self.parser.parse_command("double click")
         self.mock_mouse.click.assert_called_with("double")
 
+        self.mock_mouse.reset_mock()
+        # phonetic/homophone variant
+        self.parser.parse_command("wright click")
+        self.mock_mouse.click.assert_called_with("right")
+
     def test_scroll_commands(self):
         self.parser.parse_command("scroll up")
         self.mock_mouse.scroll.assert_called_with("up")
@@ -73,6 +78,11 @@ class TestCommandParser:
         
         self.mock_mouse.reset_mock()
         self.parser.parse_command("where")
+        self.mock_mouse.show_cursor_position.assert_called_once()
+
+        self.mock_mouse.reset_mock()
+        # homophone: 'wear' should be treated as 'where'
+        self.parser.parse_command("wear is my cursor")
         self.mock_mouse.show_cursor_position.assert_called_once()
 
     def test_find_cursor_command(self):

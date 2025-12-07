@@ -52,6 +52,7 @@ class CommandParser:
             return
 
         text = text.lower().strip()
+        text = self._normalize_phonetics(text)
 
         # Handle visual locate before generic 'where'
         if self._is_find_command(text):  
@@ -136,6 +137,41 @@ class CommandParser:
             self.mouse_controller.show_cursor_position()
         else:
             print(f"Unrecognized command: {text}")
+
+    def _normalize_phonetics(self, text: str) -> str:
+        """Map common homophones / STT misspellings to canonical command words."""
+        if not text:
+            return text
+
+        phonetic_map = {
+            # directions / clicks
+            "wright": "right",
+            "rite": "right",
+            "write": "right",
+            "leftt": "left",
+            "downe": "down",
+            "opp": "up",
+            # cursor / mouse
+            "mice": "mouse",
+            "mouce": "mouse",
+            "curser": "cursor",
+            # where / wear
+            "wear": "where",
+            "ware": "where",
+            # actions
+            "clik": "click",
+            "clic": "click",
+            "clique": "click",
+            "skroll": "scroll",
+            "mouve": "move",
+            "prez": "press",
+            "ohpen": "open",
+            "navagate": "navigate",
+        }
+
+        tokens = text.split()
+        normalized = [phonetic_map.get(tok, tok) for tok in tokens]
+        return " ".join(normalized)
 
     def _is_movement_command(self, text):
         """Check if text contains movement command"""
