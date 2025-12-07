@@ -13,7 +13,15 @@ Click-to-Talk is a human-computer interaction project that demonstrates voice-co
 
 Watch the initial demonstration of Click-to-Talk in action:
 
-**[View Project Demo Video](https://youtu.be/ZgICXJpQtHA?si=jD4bxAExTHA62veB)** - See voice-controlled mouse navigation, command parsing, and accessibility features in real-time.
+<div align="center">
+  <a href="https://youtu.be/ZgICXJpQtHA?si=jD4bxAExTHA62veB" target="_blank">
+    <img src="https://img.youtube.com/vi/ZgICXJpQtHA/0.jpg" alt="Click-to-Talk Demo Video" width="560" height="315">
+  </a>
+</div>
+
+**See voice-controlled mouse navigation, command parsing, and accessibility features in real-time.**
+
+---
 
 ## Documentation Hub
 
